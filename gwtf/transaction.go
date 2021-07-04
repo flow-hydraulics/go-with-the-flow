@@ -1,7 +1,6 @@
 package gwtf
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -201,10 +200,9 @@ func (t FlowTransactionBuilder) Run() []flow.Event {
 	if t.MainSigner == nil {
 		log.Fatalf("%v You need to set the main signer", emoji.PileOfPoo)
 	}
-	txFilePath := fmt.Sprintf("./transactions/%s.cdc", t.FileName)
-	code, err := ioutil.ReadFile(txFilePath)
+	code, err := ioutil.ReadFile(t.FileName)
 	if err != nil {
-		log.Fatalf("%v Could not read transaction file from path=%s", emoji.PileOfPoo, txFilePath)
+		log.Fatalf("%v Could not read transaction file from path=%s", emoji.PileOfPoo, t.FileName)
 	}
 	tx := flow.NewTransaction().SetScript(code)
 

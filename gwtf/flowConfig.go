@@ -18,8 +18,8 @@ type RawFlowConfig struct {
 
 // RawAccount flow accounts struct for marshalling into primitive types
 type RawAccount struct {
-	Address    string `json:"address"`
-	Keys 	   string `json:"key"`
+	Address string `json:"address"`
+	Keys    string `json:"keys"`
 }
 
 // NewRawFlowConfig will read the flow.json file
