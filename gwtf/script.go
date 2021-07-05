@@ -175,18 +175,21 @@ func (t FlowScriptBuilder) RunReturns() (value cadence.Value, err error) {
 	f := t.GoWithTheFlow
 	c, err := client.New(f.Address, grpc.WithInsecure(), grpc.WithMaxMsgSize(maxGRPCMessageSize))
 	if err != nil {
-		log.Fatalf("%v Error creating flow client", emoji.PileOfPoo)
+		log.Printf("%v Error creating flow client", emoji.PileOfPoo)
+	    return
 	}
 
 	if err != nil {
-		log.Fatalf("%v Could not read script file from path=%s", emoji.PileOfPoo, t.FileName)
+		log.Printf("%v Could not read script file from path=%s", emoji.PileOfPoo, t.FileName)
+	    return
 	}
 
 	log.Printf("Arguments %v\n", t.Arguments)
 	ctx := context.Background()
 	value, err = c.ExecuteScriptAtLatestBlock(ctx, t.Code, t.Arguments)
 	if err != nil {
-		log.Fatalf("%v Error executing script: %s output %v", emoji.PileOfPoo, t.FileName, err)
+		log.Printf("%v Error executing script: %s output %v", emoji.PileOfPoo, t.FileName, err)
+	    return
 	}
     str := CadenceValueToJsonString(value)
 	log.Printf("%v Script run from path %s result: %v\n", emoji.Star, t.FileName, str)

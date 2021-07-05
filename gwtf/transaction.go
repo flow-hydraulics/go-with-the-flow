@@ -208,14 +208,16 @@ func (t FlowTransactionBuilder) RunPrintEvents(ignoreFields map[string][]string)
 //Run run the transaction
 func (t FlowTransactionBuilder) Run() (events []flow.Event, err error) {
 	if t.MainSigner == nil {
-		log.Fatalf("%v You need to set the main signer", emoji.PileOfPoo)
+		log.Printf("%v You need to set the main signer", emoji.PileOfPoo)
+        return
 	}
 
 	tx := flow.NewTransaction().SetScript(t.Code)
 
 	events, err = t.GoWithTheFlow.performTransaction(tx, t.MainSigner, t.PayloadSigners, t.Arguments)
 	if err != nil {
-		log.Fatalf("%v error sending transaction %s %+v", emoji.PileOfPoo, t.FileName, err)
+		log.Printf("%v error sending transaction %s %+v", emoji.PileOfPoo, t.FileName, err)
+        return
 	}
 	log.Printf("%v Transaction %s successfully applied\n", emoji.OkHand, t.FileName)
 	return events, err
