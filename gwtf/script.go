@@ -2,8 +2,6 @@ package gwtf
 
 import (
 	"context"
-	"fmt"
-	"io/ioutil"
 	"log"
 
 	"github.com/enescakir/emoji"
@@ -16,14 +14,16 @@ import (
 type FlowScriptBuilder struct {
 	GoWithTheFlow *GoWithTheFlow
 	FileName      string
+    Code          []byte
 	Arguments     []cadence.Value
 }
 
 //ScriptFromFile will start a flow script builder
-func (f *GoWithTheFlow) ScriptFromFile(filename string) FlowScriptBuilder {
+func (f *GoWithTheFlow) ScriptFromFile(filename string, code []byte) FlowScriptBuilder {
 	return FlowScriptBuilder{
 		GoWithTheFlow: f,
 		FileName:      filename,
+		Code:          code,
 		Arguments:     []cadence.Value{},
 	}
 }
@@ -166,11 +166,11 @@ func (t FlowScriptBuilder) UFix64Argument(value string) FlowScriptBuilder {
 
 // Run executes a read only script
 func (t FlowScriptBuilder) Run() {
-	_ = t.RunReturns()
+    _, _= t.RunReturns()
 }
 
 // RunReturns executes a read only script
-func (t FlowScriptBuilder) RunReturns() cadence.Value {
+func (t FlowScriptBuilder) RunReturns() (value cadence.Value, err error) {
 
 	f := t.GoWithTheFlow
 	c, err := client.New(f.Address, grpc.WithInsecure(), grpc.WithMaxMsgSize(maxGRPCMessageSize))
@@ -178,27 +178,27 @@ func (t FlowScriptBuilder) RunReturns() cadence.Value {
 		log.Fatalf("%v Error creating flow client", emoji.PileOfPoo)
 	}
 
-	scriptFilePath := fmt.Sprintf("./scripts/%s.cdc", t.FileName)
-	code, err := ioutil.ReadFile(scriptFilePath)
 	if err != nil {
-		log.Fatalf("%v Could not read script file from path=%s", emoji.PileOfPoo, scriptFilePath)
+		log.Fatalf("%v Could not read script file from path=%s", emoji.PileOfPoo, t.FileName)
 	}
 
 	log.Printf("Arguments %v\n", t.Arguments)
 	ctx := context.Background()
-	result, err := c.ExecuteScriptAtLatestBlock(ctx, code, t.Arguments)
+	value, err = c.ExecuteScriptAtLatestBlock(ctx, t.Code, t.Arguments)
 	if err != nil {
 		log.Fatalf("%v Error executing script: %s output %v", emoji.PileOfPoo, t.FileName, err)
 	}
-
-	log.Printf("%v Script run from path %s result: %v\n", emoji.Star, scriptFilePath, CadenceValueToJsonString(result))
-	return result
+    str := CadenceValueToJsonString(value)
+	log.Printf("%v Script run from path %s result: %v\n", emoji.Star, t.FileName, str)
+	return
 }
 
-func (t FlowScriptBuilder) RunReturnsJsonString() string{
-	return CadenceValueToJsonString(t.RunReturns())
+func (t FlowScriptBuilder) RunReturnsJsonString() (valueString string, err error){
+    value, err := t.RunReturns()
+	return CadenceValueToJsonString(value), err
 }
 
-func (t FlowScriptBuilder) RunReturnsInterface() interface{}{
-	return CadenceValueToInterface(t.RunReturns())
+func (t FlowScriptBuilder) RunReturnsInterface() (itf interface{}, err error) {
+    value, err := t.RunReturns()
+	return CadenceValueToInterface(value), err
 }

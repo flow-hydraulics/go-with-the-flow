@@ -1,11 +1,20 @@
 package main
 
-import "github.com/bjartek/go-with-the-flow/gwtf"
+import (
+    "io/ioutil"
+    "github.com/bjartek/go-with-the-flow/gwtf"
+) 
 
 func main() {
 
+    filename := "../scripts/block.cdc"
+   	fb, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+
 	gwtf := gwtf.NewGoWithTheFlowEmulator()
 
-	gwtf.ScriptFromFile("block").Run()
+	gwtf.ScriptFromFile(filename, fb).Run()
 
 }

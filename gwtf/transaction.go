@@ -1,7 +1,6 @@
 package gwtf
 
 import (
-	"io/ioutil"
 	"log"
 
 	"github.com/enescakir/emoji"
@@ -10,10 +9,11 @@ import (
 )
 
 //TransactionFromFile will start a flow transaction builder
-func (f *GoWithTheFlow) TransactionFromFile(filename string) FlowTransactionBuilder {
+func (f *GoWithTheFlow) TransactionFromFile(filename string, code []byte) FlowTransactionBuilder {
 	return FlowTransactionBuilder{
 		GoWithTheFlow:  f,
 		FileName:       filename,
+        Code:           code,
 		MainSigner:     nil,
 		Arguments:      []cadence.Value{},
 		PayloadSigners: []*GoWithTheFlowAccount{},
@@ -186,38 +186,46 @@ func (t FlowTransactionBuilder) PayloadSigner(value string) FlowTransactionBuild
 }
 
 //RunPrintEventsFull will run a transaction and print all events
-func (t FlowTransactionBuilder) RunPrintEventsFull() {
-	PrintEvents(t.Run(), map[string][]string{})
+func (t FlowTransactionBuilder) RunPrintEventsFull() (err error) {
+    events, err := t.Run()
+    if err != nil {
+        return
+    }
+	PrintEvents(events, map[string][]string{})
+    return
 }
 
 //RunPrintEvents will run a transaction and print all events
-func (t FlowTransactionBuilder) RunPrintEvents(ignoreFields map[string][]string) {
-	PrintEvents(t.Run(), ignoreFields)
+func (t FlowTransactionBuilder) RunPrintEvents(ignoreFields map[string][]string) (err error) {
+    events, err := t.Run()
+    if err != nil {
+        return
+    }
+	PrintEvents(events, ignoreFields)
+    return
 }
 
 //Run run the transaction
-func (t FlowTransactionBuilder) Run() []flow.Event {
+func (t FlowTransactionBuilder) Run() (events []flow.Event, err error) {
 	if t.MainSigner == nil {
 		log.Fatalf("%v You need to set the main signer", emoji.PileOfPoo)
 	}
-	code, err := ioutil.ReadFile(t.FileName)
-	if err != nil {
-		log.Fatalf("%v Could not read transaction file from path=%s", emoji.PileOfPoo, t.FileName)
-	}
-	tx := flow.NewTransaction().SetScript(code)
 
-	events, err := t.GoWithTheFlow.performTransaction(tx, t.MainSigner, t.PayloadSigners, t.Arguments)
+	tx := flow.NewTransaction().SetScript(t.Code)
+
+	events, err = t.GoWithTheFlow.performTransaction(tx, t.MainSigner, t.PayloadSigners, t.Arguments)
 	if err != nil {
 		log.Fatalf("%v error sending transaction %s %+v", emoji.PileOfPoo, t.FileName, err)
 	}
 	log.Printf("%v Transaction %s successfully applied\n", emoji.OkHand, t.FileName)
-	return events
+	return events, err
 }
 
 //FlowTransactionBuilder used to create a builder pattern for a transaction
 type FlowTransactionBuilder struct {
 	GoWithTheFlow  *GoWithTheFlow
 	FileName       string
+    Code           []byte
 	Arguments      []cadence.Value
 	MainSigner     *GoWithTheFlowAccount
 	PayloadSigners []*GoWithTheFlowAccount
