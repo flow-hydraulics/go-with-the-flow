@@ -14,6 +14,7 @@ import (
 type FlowScriptBuilder struct {
 	GoWithTheFlow  *GoWithTheFlow
 	FileName       string
+    Code           []byte
 	Arguments      []cadence.Value
 	ScriptAsString string
 }
@@ -29,10 +30,11 @@ func (f *GoWithTheFlow) Script(content string) FlowScriptBuilder {
 }
 
 //ScriptFromFile will start a flow script builder
-func (f *GoWithTheFlow) ScriptFromFile(filename string) FlowScriptBuilder {
+func (f *GoWithTheFlow) ScriptFromFile(filename string, code []byte) FlowScriptBuilder {
 	return FlowScriptBuilder{
 		GoWithTheFlow:  f,
 		FileName:       filename,
+        Code:           code,
 		Arguments:      []cadence.Value{},
 		ScriptAsString: "",
 	}
@@ -201,16 +203,9 @@ func (t FlowScriptBuilder) RunReturns() (cadence.Value, error) {
 	scriptFilePath := fmt.Sprintf("./scripts/%s.cdc", t.FileName)
 
 	var err error
-	script := []byte(t.ScriptAsString)
-	if t.ScriptAsString == "" {
-		script, err = f.State.ReaderWriter().ReadFile(scriptFilePath)
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	result, err := f.Services.Scripts.Execute(
-		script,
+		t.Code,
 		t.Arguments,
 		scriptFilePath,
 		f.Network)

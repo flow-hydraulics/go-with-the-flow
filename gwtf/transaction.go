@@ -14,10 +14,11 @@ import (
 )
 
 // TransactionFromFile will start a flow transaction builder
-func (f *GoWithTheFlow) TransactionFromFile(filename string) FlowTransactionBuilder {
+func (f *GoWithTheFlow) TransactionFromFile(filename string, code []byte) FlowTransactionBuilder {
 	return FlowTransactionBuilder{
 		GoWithTheFlow:  f,
 		FileName:       filename,
+        Code:           code,
 		MainSigner:     nil,
 		Arguments:      []cadence.Value{},
 		PayloadSigners: []*flowkit.Account{},
@@ -258,11 +259,6 @@ func (t FlowTransactionBuilder) RunE() ([]flow.Event, error) {
 		return nil, fmt.Errorf("%v You need to set the main signer", emoji.PileOfPoo)
 	}
 
-	codeFileName := fmt.Sprintf("./transactions/%s.cdc", t.FileName)
-	code, err := t.getContractCode(codeFileName)
-	if err != nil {
-		return nil, err
-	}
 	// we append the mainSigners at the end here so that it signs last
 	signers := t.PayloadSigners
 	signers = append(signers, t.MainSigner)
@@ -279,8 +275,8 @@ func (t FlowTransactionBuilder) RunE() ([]flow.Event, error) {
 		authorizers,
 		t.MainSigner.Address(),
 		signerKeyIndex,
-		code,
-		codeFileName,
+		t.Code,
+		t.FileName,
 		t.GasLimit,
 		t.Arguments,
 		t.GoWithTheFlow.Network,
@@ -335,6 +331,7 @@ func (t FlowTransactionBuilder) getContractCode(codeFileName string) ([]byte, er
 type FlowTransactionBuilder struct {
 	GoWithTheFlow  *GoWithTheFlow
 	FileName       string
+    Code           []byte
 	Content        string
 	Arguments      []cadence.Value
 	MainSigner     *flowkit.Account
