@@ -1,9 +1,10 @@
 package main
 
 import (
+	"testing"
+
 	"github.com/bjartek/go-with-the-flow/v2/gwtf"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestTransactionUpload(t *testing.T) {
@@ -26,7 +27,7 @@ func TestTransactionUpload(t *testing.T) {
 	t.Run("Upload test file", func(t *testing.T) {
 
 		//need flow in account to upload
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -52,7 +53,7 @@ transaction {
 	t.Run("Upload test image", func(t *testing.T) {
 
 		//need flow in account to upload
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -91,10 +92,9 @@ transaction {
 
 	})
 
-
 	t.Run("Download and upload file", func(t *testing.T) {
 		//need flow in account to upload image
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -120,7 +120,7 @@ transaction {
 	})
 	t.Run("Download image and upload", func(t *testing.T) {
 		//need flow in account to upload image
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").

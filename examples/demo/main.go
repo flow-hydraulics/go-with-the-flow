@@ -40,22 +40,22 @@ transaction(value:Debug.Foo) {
 	// transactions are looked up in the `transactions` folder.
 	//if we cHange the initialization of gwtf to testnet above the account used here would be "testnet-first".
 	// finally we run the transaction and print all the events, there are several convenience methods to filter out fields from events of not print them at all if you like.
-	g.TransactionFromFile("create_nft_collection").SignProposeAndPayAs("first").RunPrintEventsFull()
+	g.TransactionFromFile("create_nft_collection", []byte{}).SignProposeAndPayAs("first").RunPrintEventsFull()
 
 	//the second transaction show how you can call a transaction with an argument. In this case we send a string to the transactions
-	g.TransactionFromFile("arguments").SignProposeAndPayAs("first").StringArgument("argument1").RunPrintEventsFull()
+	g.TransactionFromFile("arguments", []byte{}).SignProposeAndPayAs("first").StringArgument("argument1").RunPrintEventsFull()
 
 	//it is possible to send an accounts address as argument to a script using a convenience function `AccountArgument`. Network is prefixed here as well
-	g.TransactionFromFile("argumentsWithAccount").SignProposeAndPayAs("first").AccountArgument("second").RunPrintEventsFull()
+	g.TransactionFromFile("argumentsWithAccount", []byte{}).SignProposeAndPayAs("first").AccountArgument("second").RunPrintEventsFull()
 
 	//This transactions shows an example of signing the main envelope with the "first" user and the paylod with the "second" user.
-	g.TransactionFromFile("signWithMultipleAccounts").SignProposeAndPayAs("first").PayloadSigner("second").StringArgument("asserts.go").RunPrintEventsFull()
+	g.TransactionFromFile("signWithMultipleAccounts", []byte{}).SignProposeAndPayAs("first").PayloadSigner("second").StringArgument("asserts.go").RunPrintEventsFull()
 
 	//Running a script from a file is almost like running a transaction.
-	g.ScriptFromFile("test").AccountArgument("second").Run()
+	g.ScriptFromFile("test", []byte{}).AccountArgument("second").Run()
 
 	//In this transaction we actually do some meaningful work. We mint 10 flowTokens into the account of user first. Note that this method will not work on mainnet or testnet. If you want tokens on testnet use the faucet or transfer from one account to another
-	g.TransactionFromFile("mint_tokens").SignProposeAndPayAsService().AccountArgument("first").UFix64Argument("10.0").RunPrintEventsFull()
+	g.TransactionFromFile("mint_tokens", []byte{}).SignProposeAndPayAsService().AccountArgument("first").UFix64Argument("10.0").RunPrintEventsFull()
 
 	//If you do not want to store a script in a file you can use a inline representation with go multiline strings
 	g.Script(`
@@ -73,7 +73,7 @@ transaction(value:String) {
 }`).SignProposeAndPayAs("first").StringArgument("foobar").RunPrintEventsFull()
 
 	//Run script that returns
-	result := g.ScriptFromFile("test").AccountArgument("second").RunFailOnError()
+	result := g.ScriptFromFile("test", []byte{}).AccountArgument("second").RunFailOnError()
 	log.Printf("Script returned %s", result)
 
 }

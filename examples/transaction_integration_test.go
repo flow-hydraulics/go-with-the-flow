@@ -2,10 +2,11 @@ package main
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/bjartek/go-with-the-flow/v2/gwtf"
 )
@@ -17,22 +18,21 @@ func TestTransaction(t *testing.T) {
 	g := gwtf.NewTestingEmulator()
 	t.Parallel()
 
-
 	t.Run("fail on missing signer", func(t *testing.T) {
-		g.TransactionFromFile("create_nft_collection").
-			Test(t).         //This method will return a TransactionResult that we can assert upon
+		g.TransactionFromFile("create_nft_collection", []byte{}).
+			Test(t).                                         //This method will return a TransactionResult that we can assert upon
 			AssertFailure("You need to set the main signer") //we assert that there is a failure
 	})
 
 	t.Run("fail on wrong transaction name", func(t *testing.T) {
-		g.TransactionFromFile("create_nf_collection").
+		g.TransactionFromFile("create_nf_collection", []byte{}).
 			SignProposeAndPayAs("first").
-			Test(t).         //This method will return a TransactionResult that we can assert upon
+			Test(t).                                                                                           //This method will return a TransactionResult that we can assert upon
 			AssertFailure("Could not read transaction file from path=./transactions/create_nf_collection.cdc") //we assert that there is a failure
 	})
 
 	t.Run("Create NFT collection", func(t *testing.T) {
-		g.TransactionFromFile("create_nft_collection").
+		g.TransactionFromFile("create_nft_collection", []byte{}).
 			SignProposeAndPayAs("first").
 			Test(t).         //This method will return a TransactionResult that we can assert upon
 			AssertSuccess(). //Assert that there are no errors and that the transactions succeeds
@@ -40,7 +40,7 @@ func TestTransaction(t *testing.T) {
 	})
 
 	t.Run("Mint tokens assert events", func(t *testing.T) {
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -105,7 +105,7 @@ transaction(user:Address) {
 		log.SetOutput(&str)
 		defer log.SetOutput(os.Stdout)
 
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").RunPrintEventsFull()
@@ -119,7 +119,7 @@ transaction(user:Address) {
 		log.SetOutput(&str)
 		defer log.SetOutput(os.Stdout)
 
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").

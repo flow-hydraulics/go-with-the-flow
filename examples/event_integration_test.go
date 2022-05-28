@@ -1,18 +1,19 @@
 package main
 
 import (
-	"github.com/bjartek/go-with-the-flow/v2/gwtf"
-	"github.com/stretchr/testify/assert"
 	"io/fs"
 	"os"
 	"testing"
+
+	"github.com/bjartek/go-with-the-flow/v2/gwtf"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEvents(t *testing.T) {
 
 	t.Run("Test that from index cannot be negative", func(t *testing.T) {
 		g := gwtf.NewTestingEmulator()
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -27,7 +28,7 @@ func TestEvents(t *testing.T) {
 
 	t.Run("Fetch last events", func(t *testing.T) {
 		g := gwtf.NewTestingEmulator()
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -42,7 +43,7 @@ func TestEvents(t *testing.T) {
 
 	t.Run("Fetch last events and sort them ", func(t *testing.T) {
 		g := gwtf.NewTestingEmulator()
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -50,7 +51,7 @@ func TestEvents(t *testing.T) {
 			AssertSuccess().
 			AssertEventCount(3)
 
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -64,11 +65,9 @@ func TestEvents(t *testing.T) {
 		assert.True(t, ev[0].BlockHeight < ev[1].BlockHeight)
 	})
 
-
-
 	t.Run("Fetch last write progress file", func(t *testing.T) {
 		g := gwtf.NewTestingEmulator()
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
@@ -99,7 +98,7 @@ func TestEvents(t *testing.T) {
 		assert.NoError(t, err)
 
 		g := gwtf.NewTestingEmulator()
-		g.TransactionFromFile("mint_tokens").
+		g.TransactionFromFile("mint_tokens", []byte{}).
 			SignProposeAndPayAsService().
 			AccountArgument("first").
 			UFix64Argument("100.0").
