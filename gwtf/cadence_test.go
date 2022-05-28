@@ -20,11 +20,14 @@ func TestCadenceValueToJsonString(t *testing.T) {
 		assert.Equal(t, `""`, value)
 	})
 	t.Run("Unwrap optional", func(t *testing.T) {
-		value := CadenceValueToJsonString(cadence.NewOptional(cadence.NewString("foo")))
+		fooTest, _ := cadence.NewString("foo")
+		value := CadenceValueToJsonString(cadence.NewOptional(fooTest))
 		assert.Equal(t, `"foo"`, value)
 	})
 	t.Run("Array", func(t *testing.T) {
-		value := CadenceValueToJsonString(cadence.NewArray([]cadence.Value{cadence.NewString("foo"), cadence.NewString("bar")}))
+		fooTest, _ := cadence.NewString("foo")
+		barTest, _ := cadence.NewString("bar")
+		value := CadenceValueToJsonString(cadence.NewArray([]cadence.Value{fooTest, barTest}))
 		assert.Equal(t, `[
     "foo",
     "bar"
@@ -32,7 +35,9 @@ func TestCadenceValueToJsonString(t *testing.T) {
 	})
 
 	t.Run("Dictionary", func(t *testing.T) {
-		dict := cadence.NewDictionary([]cadence.KeyValuePair{{Key: cadence.NewString("foo"), Value: cadence.NewString("bar")}})
+		fooTest, _ := cadence.NewString("foo")
+		barTest, _ := cadence.NewString("bar")
+		dict := cadence.NewDictionary([]cadence.KeyValuePair{{Key: fooTest, Value: barTest}})
 		value := CadenceValueToJsonString(dict)
 		assert.Equal(t, `{
     "foo": "bar"
@@ -40,9 +45,9 @@ func TestCadenceValueToJsonString(t *testing.T) {
 	})
 
 	t.Run("Struct", func(t *testing.T) {
-
+		barTest, _ := cadence.NewString("bar")
 		s := cadence.Struct{
-			Fields: []cadence.Value{cadence.NewString("bar")},
+			Fields: []cadence.Value{barTest},
 			StructType: &cadence.StructType{
 				Fields: []cadence.Field{{
 					Identifier: "foo",
