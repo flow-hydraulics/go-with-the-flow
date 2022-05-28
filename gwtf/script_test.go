@@ -38,7 +38,8 @@ func TestScriptArguments(t *testing.T) {
 		assert.Contains(t, builder.Arguments, cadence.NewBytes([]byte{1}))
 		assert.Contains(t, builder.Arguments, fix)
 		assert.Contains(t, builder.Arguments, ufix)
-		assert.Contains(t, builder.Arguments, cadence.NewString("test"))
+		testStr, _ := cadence.NewString("test")
+		assert.Contains(t, builder.Arguments, testStr)
 		assert.Contains(t, builder.Arguments, dateFix)
 
 	})
