@@ -284,6 +284,7 @@ func (t FlowTransactionBuilder) RunE() ([]flow.Event, error) {
 		t.GasLimit,
 		t.Arguments,
 		t.GoWithTheFlow.Network,
+		true,
 	)
 	if err != nil {
 		return nil, err
@@ -305,7 +306,7 @@ func (t FlowTransactionBuilder) RunE() ([]flow.Event, error) {
 	t.GoWithTheFlow.Logger.StartProgress("Sending transaction...")
 	defer t.GoWithTheFlow.Logger.StopProgress()
 	txBytes := []byte(fmt.Sprintf("%x", tx.FlowTransaction().Encode()))
-	_, res, err := t.GoWithTheFlow.Services.Transactions.SendSigned(txBytes)
+	_, res, err := t.GoWithTheFlow.Services.Transactions.SendSigned(txBytes, true)
 
 	if err != nil {
 		return nil, err
